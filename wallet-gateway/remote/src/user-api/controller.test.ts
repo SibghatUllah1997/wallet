@@ -4,6 +4,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { pino, type Logger } from 'pino'
 import { sink } from 'pino-test'
+import { errorCodes } from '@canton-network/core-rpc-errors'
 import type { AuthContext, Idp } from '@canton-network/core-wallet-auth'
 import {
     type MessageRaw,
@@ -1688,6 +1689,10 @@ describe('userController', () => {
             expect(emitSpy).toHaveBeenCalledWith('txChanged', {
                 status: 'failed',
                 commandId: transaction.commandId,
+                error: {
+                    code: errorCodes.provider.userRejectedRequest,
+                    message: 'Rejected by the user',
+                },
             })
             expect(removeSpy.mock.invocationCallOrder[0]).toBeLessThan(
                 emitSpy.mock.invocationCallOrder[0]!
