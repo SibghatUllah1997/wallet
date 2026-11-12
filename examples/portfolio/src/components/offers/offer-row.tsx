@@ -213,7 +213,7 @@ function AllocationV2OfferRow({
 }) {
     const [executor, ...moreExecutors] = item.settlement.executors
     return (
-        <OfferRowGrid columns={5}>
+        <OfferRowGrid columns={6}>
             <OfferDetailBlock label="Type" value={V2_TYPE_LABEL[item.kind]} />
             <OfferDetailBlock label="Net Amount" value={formatNet(item)} />
             {item.expiry ? (
