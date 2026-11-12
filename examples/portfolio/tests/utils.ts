@@ -519,3 +519,56 @@ export const amuletSupportsApi = async (api: string): Promise<boolean> => {
 
 export const amuletSupportsTransferV2 = () =>
     amuletSupportsApi('splice-api-token-transfer-instruction-v2')
+
+const HISTORY_TIMEOUT = 30_000
+
+type ExpectedHistoryRow = {
+    activity: string
+    amount: string
+    counterpartyHint: string
+}
+
+export const gotoWalletHistory = async (
+    page: Page,
+    walletId: string,
+    walletHint: string,
+    timeout = HISTORY_TIMEOUT,
+    baseUrl: string = BASE_URL
+): Promise<void> => {
+    await page.goto(
+        `${baseUrl}/dashboard/wallet/${encodeURIComponent(walletId)}`
+    )
+
+    const main = page.locator('main')
+    await expect(main.getByRole('heading', { name: walletHint })).toBeVisible({
+        timeout: 10_000,
+    })
+    await expect(
+        main.getByRole('table', { name: 'Transaction history' })
+    ).toBeVisible({ timeout })
+}
+
+export const expectHistoryRow = async (
+    page: Page,
+    expected: ExpectedHistoryRow,
+    timeout = HISTORY_TIMEOUT
+): Promise<void> => {
+    const row = page
+        .getByRole('table', { name: 'Transaction history' })
+        .getByRole('row')
+        .filter({
+            has: page.getByRole('cell', {
+                name: expected.activity,
+                exact: true,
+            }),
+        })
+        .filter({
+            has: page.getByRole('cell', {
+                name: expected.amount,
+                exact: true,
+            }),
+        })
+        .filter({ hasText: expected.counterpartyHint.slice(0, 10) })
+
+    await expect(row).toHaveCount(1, { timeout })
+}
