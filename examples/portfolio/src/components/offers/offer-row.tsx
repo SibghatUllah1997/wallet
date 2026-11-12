@@ -198,8 +198,8 @@ function formatNet(item: AllocationV2Item) {
     if (net.length === 0) return '-'
     return net
         .map(({ amount, instrumentId }) => {
-            const sign = amount.isPositive() && !amount.isZero() ? '+' : '-'
-            return `${sign}${formatAmount(amount.toString())} ${instrumentId}`
+            const sign = amount.isNegative() ? '-' : amount.isZero() ? '' : '+'
+            return `${sign}${formatAmount(amount.abs().toString())} ${instrumentId}`
         })
         .join(', ')
 }
